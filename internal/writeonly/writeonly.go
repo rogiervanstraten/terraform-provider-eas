@@ -59,3 +59,31 @@ func ValidateValueWoVersion(_ context.Context, req schema.ValidateResourceConfig
 		})
 	}
 }
+
+func PreferWriteOnlyForSensitive(_ context.Context, req schema.ValidateResourceConfigFuncRequest, resp *schema.ValidateResourceConfigFuncResponse) {
+	cfg := req.RawConfig
+
+	value := cfg.GetAttr("value")
+	valueWo := cfg.GetAttr("value_wo")
+	visibility := cfg.GetAttr("visibility")
+
+	if value.IsNull() || !valueWo.IsNull() {
+		return
+	}
+
+	if !visibility.IsKnown() || visibility.IsNull() {
+		return
+	}
+
+	visibilityStr := visibility.AsString()
+	if visibilityStr != "SECRET" && visibilityStr != "SENSITIVE" {
+		return
+	}
+
+	resp.Diagnostics = append(resp.Diagnostics, diag.Diagnostic{
+		Severity:      diag.Warning,
+		Summary:       "Use write-only attribute for sensitive values",
+		Detail:        "For SECRET or SENSITIVE variables, consider using 'value_wo' instead of 'value'. Write-only attributes are not stored in state, providing better security for secrets. Requires Terraform 1.11+.",
+		AttributePath: cty.GetAttrPath("value"),
+	})
+}

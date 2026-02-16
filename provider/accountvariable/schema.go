@@ -5,7 +5,6 @@ import (
 	"terraform-provider-eas/internal/writeonly"
 	"terraform-provider-eas/provider/accountvariable/operations"
 
-	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -75,10 +74,7 @@ func Resource() *schema.Resource {
 			},
 		},
 		ValidateRawResourceConfigFuncs: []schema.ValidateRawResourceConfigFunc{
-			validation.PreferWriteOnlyAttribute(
-				cty.GetAttrPath("value"),
-				cty.GetAttrPath("value_wo"),
-			),
+			writeonly.PreferWriteOnlyForSensitive,
 			writeonly.ValidateValueOrValueWo,
 			writeonly.ValidateValueWoVersion,
 		},

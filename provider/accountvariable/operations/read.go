@@ -14,12 +14,12 @@ func Read(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	var diags diag.Diagnostics
 	client := m.(*client.EASClient)
 
-	input := eas.GetAppVariableData{
-		Id:    d.Get("id").(string),
-		AppId: d.Get("app_id").(string),
+	input := eas.GetAccountVariableData{
+		Id:        d.Id(),
+		AccountId: client.AccountId,
 	}
 
-	data, err := client.AppVariable.Get(input)
+	data, err := client.AccountVariable.Get(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -43,7 +43,10 @@ func Read(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	if err := d.Set("environments", data.Environments); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
-	if err := d.Set("app_id", input.AppId); err != nil {
+	if err := d.Set("created_at", data.CreatedAt); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("updated_at", data.UpdatedAt); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
 

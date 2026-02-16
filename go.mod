@@ -2,8 +2,11 @@ module terraform-provider-eas
 
 go 1.24.1
 
+replace github.com/fintreal/eas-sdk-go => github.com/rogiervanstraten/eas-sdk-go v0.0.0-20260216104002-576b6adcf61f
+
 require (
 	github.com/fintreal/eas-sdk-go v1.30.2
+	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.36.1
 )
 
@@ -14,7 +17,6 @@ require (
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
 	github.com/hashicorp/go-plugin v1.6.2 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect

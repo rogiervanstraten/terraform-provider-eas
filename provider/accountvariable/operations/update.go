@@ -10,11 +10,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Create(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
+func Update(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 	client := m.(*client.EASClient)
 
+	id := d.Id()
 	name := d.Get("name").(string)
-	appId := d.Get("app_id").(string)
 	value := writeonly.GetValue(d)
 	visibility := d.Get("visibility").(string)
 
@@ -26,20 +26,26 @@ func Create(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics
 		environments = append(environments, str)
 	}
 
-	input := eas.CreateAppVariableData{
+	input := eas.UpdateAccountVariableData{
+		Id:           id,
 		Name:         name,
-		AppId:        appId,
 		Value:        value,
 		Visibility:   visibility,
 		Environments: environments,
 	}
 
-	data, err := client.AppVariable.Create(input)
+	data, err := client.AccountVariable.Update(input)
 	if err != nil {
 		return diag.FromErr(err)
 	}
+
 	d.SetId(data.Id)
 
 	var diags diag.Diagnostics
+
+	if err := d.Set("updated_at", data.UpdatedAt); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+
 	return diags
 }

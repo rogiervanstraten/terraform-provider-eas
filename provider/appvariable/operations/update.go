@@ -3,6 +3,7 @@ package operations
 import (
 	"context"
 	"terraform-provider-eas/internal/client"
+	"terraform-provider-eas/internal/writeonly"
 
 	"github.com/fintreal/eas-sdk-go/eas"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -14,8 +15,7 @@ func Update(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics
 
 	id := d.Get("id").(string)
 	name := d.Get("name").(string)
-
-	value := d.Get("value").(string)
+	value := writeonly.GetValue(d)
 	visibility := d.Get("visibility").(string)
 
 	set := d.Get("environments").(*schema.Set).List()
